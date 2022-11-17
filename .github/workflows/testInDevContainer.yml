@@ -25,6 +25,7 @@ jobs:
         #- uses: education/autograding@v1
         with:
           # Change this to point to your image name
-          imageName: ghcr.io/tu-dortmund-cs-ls12-daes-teaching/coding02-devcontainer
+          #imageName: ghcr.io/tu-dortmund-cs-ls12-daes-teaching/coding02-devcontainer
+          imageName: ghcr.io/nilhoel1/coding02-devcontainer
           # Change this to be your CI task/script
           runCmd: ./helper.sh config ; ./helper.sh c #; ./build/bin/UnitTest --gtest_filter="MayJoinTests.*"
