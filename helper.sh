@@ -1,12 +1,12 @@
 #!/bin/bash
 
-clean () {
+clean() {
   echo "==== Cleaning build folder ===="
   rm -rf build/
   rm compile_commands.json
 }
 
-config () {
+config() {
   echo "==== Crating build folder ===="
   mkdir build
   cd build
@@ -17,7 +17,7 @@ config () {
   echo "==== Done! ===="
 }
 
-compile () {
+compile() {
   cd build
   echo "==== Compiling Project ===="
   ninja
@@ -25,7 +25,7 @@ compile () {
   echo "==== Done! ===="
 }
 
-run () {
+run() {
   echo "==== Running $1 ===="
   opt -load-pass-plugin build/lib/libCacheAnalysisPass.so \
     -passes='lru-misses(function(loop-unroll-and-jam))' \
@@ -33,11 +33,11 @@ run () {
   #llvm-dis < out.bc > out.ll
 }
 
-test () {
+test() {
   ./build/bin/UnitTest --gtest_brief=1
 }
 
-allBenchs=( "adpcm"
+allBenchs=("adpcm"
   "bs"
   "bsort100"
   "cnt"
@@ -75,96 +75,106 @@ allBenchs=( "adpcm"
   "whet"
 )
 
-runall () {
+runall() {
   for str in ${allBenchs[@]}; do
     echo
     run $str
   done
 }
 
+autogradesetup() {
+  export LLVM_DIR=/usr/lib/llvm-14
+  clean
+  config
+  build
+}
+
 case $1 in
-  clean)
-    clean
-    ;;
-  config)
-    config
-    ;;
-  c | compile)
-    compile
-    ;;
-  cr)
-    compile
-    if [ $2 ]; then
-      run $2
-    else
-      echo "==== Please provide name of the test as second argument! ===="
-    fi
-    ;;
-  r | run)
-    if [ $2 ]; then
-      run $2
-    else
-      echo "==== Please provide name of the test as second argument! ===="
-    fi
-    ;;
-  t | test)
-    test
-    ;;
-  ra | runall)
-    runall
-    ;;
-  docker)
-    docker build -t rtsalab01cacheanalysis:latest .
-    docker run -i -d -v "$(pwd)"/.:/root:rw --name RTSAlab01 rtsalab01cacheanalysis
-    ;;
-  evaluation | eval)
-    run "crc"
-    echo "==== Correct crc ===="
-    echo "MustHits: 90"
-    echo
-    run "cnt"
-    echo "==== Correct cnt ===="
-    echo "MustHits: 28"
-    echo
-    run "duff"
-    echo "==== Correct duff ===="
-    echo "MustHits: 78"
-    echo
-    run "fft1"
-    echo "==== Correct fft1 ===="
-    echo "MustHits: 74"
-    echo
-    run "insertsort"
-    echo "==== Correct insertsort ===="
-    echo "MustHits: 61"
-    echo
-    run "matmult"
-    echo "==== Correct matmult ===="
-    echo "MustHits: 34"
-    echo
-    ;;
-  a | all)
-    clean
-    config
-    cd build
-    ninja
-    echo "==== Done! ===="
-    ;;
-  *)
-    if [ $1 ]; then
-      echo "Unknown argument: $1"
-    fi
-    echo "Please provide one of the following arguments:"
-    echo "  clean               Deletes the build folder"
-    echo "  config              Creates build folder and configures build System"
-    echo "  docker              Build and Run Docker container for development"
-    echo "  eval                Run a subset of tests for evaluation of your implementation"
-    echo "  c | compile             Compiles the Project"
-    echo "  a | all                 Cleans, configures and compiles the project"
-    echo "  r | run [name]          Run pass on test/[name] from the test folder"
-    echo "  cr [name]               Compile and run pass on test/[name] from the test folder"
-    echo "  ra | runall              Run pass on all tests from the test folder"
-    echo "  t | test                 Execute Unit tests, only test that Fail are printed."
-    exit
+as)
+  autogradesetup
+  ;;
+clean)
+  clean
+  ;;
+config)
+  config
+  ;;
+c | compile)
+  compile
+  ;;
+cr)
+  compile
+  if [ $2 ]; then
+    run $2
+  else
+    echo "==== Please provide name of the test as second argument! ===="
+  fi
+  ;;
+r | run)
+  if [ $2 ]; then
+    run $2
+  else
+    echo "==== Please provide name of the test as second argument! ===="
+  fi
+  ;;
+t | test)
+  test
+  ;;
+ra | runall)
+  runall
+  ;;
+docker)
+  docker build -t rtsalab01cacheanalysis:latest .
+  docker run -i -d -v "$(pwd)"/.:/root:rw --name RTSAlab01 rtsalab01cacheanalysis
+  ;;
+evaluation | eval)
+  run "crc"
+  echo "==== Correct crc ===="
+  echo "MustHits: 90"
+  echo
+  run "cnt"
+  echo "==== Correct cnt ===="
+  echo "MustHits: 28"
+  echo
+  run "duff"
+  echo "==== Correct duff ===="
+  echo "MustHits: 78"
+  echo
+  run "fft1"
+  echo "==== Correct fft1 ===="
+  echo "MustHits: 74"
+  echo
+  run "insertsort"
+  echo "==== Correct insertsort ===="
+  echo "MustHits: 61"
+  echo
+  run "matmult"
+  echo "==== Correct matmult ===="
+  echo "MustHits: 34"
+  echo
+  ;;
+a | all)
+  clean
+  config
+  cd build
+  ninja
+  echo "==== Done! ===="
+  ;;
+*)
+  if [ $1 ]; then
+    echo "Unknown argument: $1"
+  fi
+  echo "Please provide one of the following arguments:"
+  echo "  clean               Deletes the build folder"
+  echo "  config              Creates build folder and configures build System"
+  echo "  docker              Build and Run Docker container for development"
+  echo "  eval                Run a subset of tests for evaluation of your implementation"
+  echo "  c | compile             Compiles the Project"
+  echo "  a | all                 Cleans, configures and compiles the project"
+  echo "  r | run [name]          Run pass on test/[name] from the test folder"
+  echo "  cr [name]               Compile and run pass on test/[name] from the test folder"
+  echo "  ra | runall              Run pass on all tests from the test folder"
+  echo "  t | test                 Execute Unit tests, only test that Fail are printed."
+  exit
   ;;
 esac
