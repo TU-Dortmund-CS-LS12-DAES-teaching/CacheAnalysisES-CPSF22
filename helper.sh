@@ -86,7 +86,7 @@ autogradesetup() {
   export LLVM_DIR=/usr/lib/llvm-14
   clean
   config
-  build
+  compile
 }
 
 case $1 in
