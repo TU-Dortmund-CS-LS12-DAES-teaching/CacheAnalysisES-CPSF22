@@ -83,6 +83,11 @@ runall() {
 }
 
 autogradesetup() {
+  wget https://apt.llvm.org/llvm.sh
+  chmod +x llvm.sh
+  sudo ./llvm.sh 14
+  sudo apt update
+  sudo apt install cmake ninja-build
   export LLVM_DIR=/usr/lib/llvm-14
   clean
   config
