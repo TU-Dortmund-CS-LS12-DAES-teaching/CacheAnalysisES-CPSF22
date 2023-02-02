@@ -8,6 +8,7 @@ In order to do so, complete the function "mayJoin" inside [include/AbstractState
 The goal is to join the inbound state into the "this" state.
 
 
+
 The Project can be build, tested and Evaluated with the "helper" script.
 The Setup and some nice to knows are described in the following sections.
 
